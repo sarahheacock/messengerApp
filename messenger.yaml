@@ -1,0 +1,52 @@
+# message-server --> 3000
+# socket-server --> 5000
+# user-server --> 6000
+# static-server --> 8000
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-deployment
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: my-deployment
+  template:
+    metadata:
+      labels:
+        app: my-deployment
+    spec:
+      containers:
+      - name: message-server
+        image: message-server:v1
+        ports:
+        - containerPort: 3000
+      - name: socket-server
+        image: socket-server:v1
+        ports:
+        - containerPort: 5000
+      - name: user-server
+        image: user-server:v1
+        ports:
+        - containerPort: 6000
+      - name: static-server
+        image: static-server:v1
+        ports:
+        - containerPort: 8000
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: my-service
+  labels:
+    run: my-service
+spec:
+  type: LoadBalancer
+  selector:
+    app: my-deployment
+  ports:
+  - name: socket-server
+    protocol: TCP
+    port: 8888
+    targetPort: 5000 # map any incoming port to 5000

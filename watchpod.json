@@ -1,0 +1,9 @@
+{
+  "docker": [
+    "docker build -t message-server:v1 ./messageServer",
+    "docker build -t user-server:v1 ./userServer",
+    "docker build -t socket-server:v1 ./socketServer",
+    "docker build -t static-server:v1 ./client"
+  ],
+  "kubernetes": ["kubectl create -f ./messenger.yaml"]
+}

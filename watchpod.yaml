@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: watchpod
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: watchpod
+  template:
+    metadata:
+      labels:
+        app: watchpod
+    spec:
+      containers:
+      - name: watchpod
+        image: gcr.io/frasaja-1/watchpod:v1
+        volumeMounts:
+        - mountPath: /var/run/docker.sock
+          name: docker-sock-volume
+        - mountPath: /usr/src/app/test
+          name: host-mount
+      volumes:
+      # attach host's docker socket (how we make api requests to docker daemon)
+      - name: docker-sock-volume
+        hostPath:
+          path: /var/run/docker.sock
+          type: Socket
+      # attach host's files that we want to watch
+      - name: host-mount
+        hostPath:
+          path: /Users/sarahheacock/Desktop/messagerApp
+          type: Directory
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: watchpod
+spec:
+  type: NodePort
+  selector:
+    app: watchpod
+  ports:
+  - name: watchpod
+    port: 8080
+    targetPort: 8080
